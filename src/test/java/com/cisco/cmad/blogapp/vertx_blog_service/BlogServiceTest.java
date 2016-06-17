@@ -34,6 +34,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 @RunWith(VertxUnitRunner.class)
 public class BlogServiceTest
 {
+	/*
 	Vertx vertx = null;
 	int port = 0;
 	MongoClient mongo = null;
@@ -131,4 +132,5 @@ public class BlogServiceTest
 		System.out.println(base64Util.encode(userName, password));
 		  
 	}
+	*/
 }
