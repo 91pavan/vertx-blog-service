@@ -63,6 +63,7 @@ public class BlogServiceApp extends AbstractVerticle
     
     public void stop(Future<Void> stopFuture) throws Exception{
     	System.out.println("vertx-blog-service verticle stopped!");
+    	stopFuture.complete();
     }
     
     private void HttpServer(int port) {
@@ -149,7 +150,7 @@ public class BlogServiceApp extends AbstractVerticle
     		
     	    client.findOne("blog_users", new JsonObject().put("userName", userName).put("password", password), null, lookupUser -> {
     	            
-    	        if(lookupUser.succeeded()) {
+    	        if(lookupUser.result() != null) {
     	        	
     	          JsonObject blogDetails = ctx.getBodyAsJson();
     	          client.findOne("blogs", new JsonObject().put("title", blogDetails.getString("title"))
@@ -209,55 +210,55 @@ public class BlogServiceApp extends AbstractVerticle
     		  
     		client.findOne("blog_users", new JsonObject().put("userName", userName).put("password", password), null, lookupUser -> {
 	            
-    	        if(lookupUser.succeeded()) {
+    	        if(lookupUser.result() != null) {
     	        	
-				  String blogId = ctx.request().getParam("id");
-		
-			      JsonObject blogComments = ctx.getBodyAsJson();
-			      
-			      System.out.println(blogComments);
-			      
-			      client.findOne("blogs", new JsonObject().put("_id", blogId)
-			      , null, lookup -> {
-			    		    	 
-			      // error handling
-			      if (lookup.failed()) {
-			        ctx.fail(500);
-			        return;
-			      }
+					  String blogId = ctx.request().getParam("id");
 			
-			      JsonObject blog = lookup.result();
-			      		
-			      if (blog == null) {
-				    // does not exists
-			    	  ctx.fail(500);
-		            
-			      } else {
-			    	  
-		              JsonArray comments = blog.getJsonArray("comments");
-		
-			    	  
-		              comments.add(blogComments);
-		              
-		              blog.put("comments", comments);
-		              
-			    	  client.save("blogs", blog, insert -> {
-			              // error handling
-			              if (insert.failed()) {
-			                ctx.fail(500);
-			                return;
-			              }
-		
-			              // add the generated id to the user object
-		
-			              ctx.response().putHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-			              System.out.println(blog.encode());
-			              ctx.response().end(blogComments.encode());
-			            });
-			      }
-	    	      
-	    	    });
-    	     }
+				      JsonObject blogComments = ctx.getBodyAsJson();
+				      
+				      System.out.println(blogComments);
+				      
+				      client.findOne("blogs", new JsonObject().put("_id", blogId)
+				      , null, lookup -> {
+				    		    	 
+				      // error handling
+				      if (lookup.failed()) {
+				        ctx.fail(500);
+				        return;
+				      }
+				
+				      JsonObject blog = lookup.result();
+				      		
+				      if (blog == null || blog.size() == 0) {
+					    // does not exists
+				    	  ctx.fail(500);
+			            
+				      } else {
+				    	  
+			              JsonArray comments = blog.getJsonArray("comments");
+			
+				    	  
+			              comments.add(blogComments);
+			              
+			              blog.put("comments", comments);
+			              
+				    	  client.save("blogs", blog, insert -> {
+				              // error handling
+				              if (insert.failed()) {
+				                ctx.fail(500);
+				                return;
+				              }
+			
+				              // add the generated id to the user object
+			
+				              ctx.response().putHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+				              System.out.println(blog.encode());
+				              ctx.response().end(blogComments.encode());
+				            });
+				      }
+		    	      
+		    	    });
+	    	     }
 		      else {
 	    	        ctx.fail(401);
 	    	 }
@@ -276,28 +277,29 @@ public class BlogServiceApp extends AbstractVerticle
     		client.findOne("blog_users", new JsonObject().put("userName", userName).put("password", password), null, lookupUser -> {
 	            
     			
-    	        if(lookupUser.succeeded()) {
-
-	    		client.find("blogs", new JsonObject(), lookup -> {
-	    	        // error handling
-	    	        if (lookup.failed()) {
-	    	          ctx.fail(500);
-	    	          return;
-	    	        }
-	
-	    	        List<JsonObject> blogs = lookup.result();
-	    	        System.out.println(blogs);
-	
-	    	        if (blogs == null || blogs.size() == 0) {
-	    	          // ctx.fail(404);
-	    	          ctx.response().setStatusCode(404).end();
-	    	          
-	    	        } else {
-	    	        	
-	    	        	ctx.response().putHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-			            ctx.response().end(blogs.toString());
-	    	        }
-	    	      });
+    	        if(lookupUser.result() != null) {
+    	        
+    	        	
+		    		client.find("blogs", new JsonObject(), lookup -> {
+		    	        // error handling
+		    	        if (lookup.failed()) {
+		    	          ctx.fail(500);
+		    	          return;
+		    	        }
+		
+		    	        List<JsonObject> blogs = lookup.result();
+		    	        System.out.println(blogs);
+		
+		    	        if (blogs == null || blogs.size() == 0) {
+		    	           // ctx.fail(404);
+		    	           ctx.response().setStatusCode(404).end();
+		    	          
+		    	        } else {
+		    	        	
+		    	        	ctx.response().putHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+				            ctx.response().end(blogs.toString());
+		    	        }
+		    	      });
     	        } else {
     	        	ctx.fail(401);
     	        }
@@ -317,25 +319,26 @@ public class BlogServiceApp extends AbstractVerticle
     		  
     		client.findOne("blog_users", new JsonObject().put("userName", userName).put("password", password), null, lookupUser -> {
 	            
-    	        if(lookupUser.succeeded()) {
+    	        if(lookupUser.result() != null) {
+    	        	
     		
-	    		client.find("blogs", new JsonObject().put("tags", ctx.request().getParam("tags")), lookup -> {
-	    	        // error handling
-	    	        if (lookup.failed()) {
-	    	          ctx.fail(500);
-	    	          return;
-	    	        }
-	
-	    	        List<JsonObject> blogs = lookup.result();
-	
-	    	        if (blogs == null) {
-	    	          ctx.fail(404);
-	    	        } else {
-	    	        	
-	    	        	ctx.response().putHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-			            ctx.response().end(blogs.toString());
-	    	        }
-	    	      });
+		    		client.find("blogs", new JsonObject().put("tags", ctx.request().getParam("tags")), lookup -> {
+		    	        // error handling
+		    	        if (lookup.failed()) {
+		    	          ctx.fail(500);
+		    	          return;
+		    	        }
+		
+		    	        List<JsonObject> blogs = lookup.result();
+		
+		    	        if (blogs == null || blogs.size() == 0) {
+		    	          ctx.fail(404);
+		    	        } else {
+		    	        	
+		    	        	ctx.response().putHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+				            ctx.response().end(blogs.toString());
+		    	        }
+		    	      });
     	        } else {
     	        	ctx.fail(401);
     	        }
