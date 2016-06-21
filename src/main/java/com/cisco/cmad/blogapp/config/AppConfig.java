@@ -24,20 +24,20 @@ public class AppConfig {
 		return prop;
 	}
 
-	public String getMongoHostConfig(Properties prop) {
-		return prop.getProperty(AppConfigKeys.MONGO_HOST, "localhost");
+	public String readDbHostConfig() {
+		return prop.getProperty(ConfigKeys.MONGO_HOST, "localhost");
 	}
 	
-	public String getMongoPortConfig(Properties prop) {
-		return prop.getProperty(AppConfigKeys.MONGO_PORT, "27017");
+	public String readDbPortConfig() {
+		return prop.getProperty(ConfigKeys.MONGO_PORT, "27017");
 	}
 	
-	public String getMongoDbConfig(Properties prop) {
-		return prop.getProperty(AppConfigKeys.DB_NAME, "cmad");
+	public String radDbNameConfig() {
+		return prop.getProperty(ConfigKeys.DB_NAME, "cmad");
 	}
 	
-	public String getAppPortConfig(Properties prop) {
-		return prop.getProperty(AppConfigKeys.APP_PORT, "8085");
+	public String readAppPortConfig() {
+		return prop.getProperty(ConfigKeys.BLOG_APP_PORT, "8085");
 	}
 	
 }
