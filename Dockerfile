@@ -14,12 +14,12 @@ EXPOSE 8085
 COPY $VERTICLE_FILE $VERTICLE_HOME/
 
 # Copy the logging.properties file
-COPY ./logging.properties $VERTICLE_HOME/
-ENV VERTX_JUL_CONFIG $VERTICLE_HOME/logging.properties
+# COPY ./logging.properties $VERTICLE_HOME/
+# ENV VERTX_JUL_CONFIG $VERTICLE_HOME/logging.properties
 
 # Copy the cluster.xml file 
-COPY ./cluster.xml $VERTICLE_HOME/
-CMD [export CLASSPATH=`find $VERTICLE_HOME -printf '%p:' | sed 's/:$//'`; vertx run $VERTICLE_NAME"]
+# COPY ./cluster.xml $VERTICLE_HOME/
+# CMD [export CLASSPATH=`find $VERTICLE_HOME -printf '%p:' | sed 's/:$//'`; vertx run $VERTICLE_NAME"]
 
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
