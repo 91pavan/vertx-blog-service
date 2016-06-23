@@ -18,10 +18,10 @@ COPY logging.properties $VERTICLE_HOME/
 ENV VERTX_JUL_CONFIG $VERTICLE_HOME/logging.properties
 
 # Copy the cluster.xml file 
-COPY cluster.xml $VERTICLE_HOME/
+# COPY cluster.xml $VERTICLE_HOME/
 # CMD [export CLASSPATH=`find $VERTICLE_HOME -printf '%p:' | sed 's/:$//'`; vertx run $VERTICLE_NAME"]
 
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
 ENTRYPOINT ["sh", "-c"]
-CMD ["vertx run $VERTICLE_NAME -cp $VERTICLE_HOME/*"]
+CMD ["vertx run $VERTICLE_NAME -cluster -cp $VERTICLE_HOME/*"]
