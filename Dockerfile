@@ -24,4 +24,4 @@ COPY cluster.xml $VERTICLE_HOME/
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
 ENTRYPOINT ["sh", "-c"]
-CMD ["vertx run $VERTICLE_NAME -cluster -cp $VERTICLE_HOME/*"]
+CMD ["vertx run $VERTICLE_NAME -cp $VERTICLE_HOME/*"]
